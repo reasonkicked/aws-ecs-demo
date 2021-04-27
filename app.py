@@ -2,22 +2,30 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-
+from secrets_manager import get_secret
 
 app = Flask(__name__)
+db_config = get_secret()
 
-db_username = os.environ["POSTGRES_USER"]
-db_password = os.environ["POSTGRES_PW"]
-db_url = os.environ["POSTGRES_URL"]
-db_db = os.environ["POSTGRES_DB"]
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# db_username = os.environ["POSTGRES_USER"]
+# db_password = os.environ["POSTGRES_PW"]
+# db_url = os.environ["POSTGRES_URL"]
+# db_db = os.environ["POSTGRES_DB"]
+#
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#
+# app.config['SQLALCHEMY_DATABASE_URI'] = (
+#     f'postgresql+psycopg2://{db_username}:' +
+#     f'{db_password}@' +
+#     f'{db_url}/' +
+#     f'{db_db}'
+# )
 
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    f'postgresql+psycopg2://{db_username}:' +
-    f'{db_password}@' +
-    f'{db_url}/' +
-    f'{db_db}'
+    f'postgresql+psycopg2://{db_config["username"]}:' +
+    f'{db_config["password"]}@' +
+    f'{db_config["host"]}/' +
+    f'{db_config["db_name"]}'
 )
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
