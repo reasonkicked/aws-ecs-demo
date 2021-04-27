@@ -7,7 +7,6 @@ import base64
 from botocore.exceptions import ClientError
 import json
 
-from secrets_manager import get_secret
 
 def get_secret():
     secret_name = "aws-ecs-demo-db-cred"
