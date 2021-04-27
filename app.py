@@ -4,20 +4,54 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 
-
 app = Flask(__name__)
 
+db_username = os.environ["POSTGRES_USER"]
+db_password = os.environ["POSTGRES_PW"]
+db_url = os.environ["POSTGRES_URL"]
+db_db = os.environ["POSTGRES_DB"]
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-def Test():
-    pass
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f'postgresql+psycopg2://{db_username}:' +
+    f'{db_password}@' +
+    f'{db_url}/' +
+    f'{db_db}'
+)
 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String())
+    last_name = db.Column(db.String())
+    amount = db.Column(db.Float)
+
+    def __init__(self, first_name: str, last_name: str, amount: float):
+        self.first_name = first_name
+        self.last_name = last_name
+        self.amount = amount
+
+    def __repr__(self):
+        return f'{self.first_name} {self.last_name} spent {self.amount}'
 
 
 @app.route('/')
 def hello_world():
     return 'Hello world!'
+
+
+@app.route('/list_db')
+def list_db():
+    transactions = Transaction.query.all()
+    return '\n'.join([str(transaction) for transaction in transactions])
 
 
 
